@@ -134,10 +134,12 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
                 c2 = null;
                 tmpImg = null;
                 counter++;
+                Log.i("count", "ciao"+counter);
                 if (counter == 8){
                     AlertDialog.Builder b = new AlertDialog.Builder(GameActivity.this);
                     b.setMessage("you win");
-                    b.setPositiveButton("Torna indietro", new DialogInterface.OnClickListener() {
+                    b.setPositiveButton("Torna indietro",
+                            new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog,
                         int which)
@@ -145,6 +147,8 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
                             startActivity(new Intent(GameActivity.this, MainActivity.class));
                         }
                 });
+                AlertDialog alertDialog = b.create();
+                alertDialog.show();}
             } else {
                 tmpImg.setImageResource(R.mipmap.ic_memo1);
                 c.setImageResource(R.mipmap.ic_memo1);

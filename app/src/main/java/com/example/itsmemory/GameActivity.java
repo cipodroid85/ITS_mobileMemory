@@ -12,106 +12,113 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.Random;
 
 
 public class GameActivity extends AppCompatActivity implements Cloneable {
+
     int[] cardsData = new int[16];
     String[] cardsData2 = new String[16];
+    String c1 = null;
+    String c2 = null;
+    ImageView tmpImg;
+    int counter = 0;
+
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        TextView points = (TextView)findViewById(R.id.textScore);
+        String t = points.getText().toString();
+
+        Log.i("test", t);
         // init cards
-    for(int k=0; k<8; k++)
-    {
-        //cardsData[k]=k;
-        //cardsData[k+8]=k;
-        cardsData2[k] = "ic_memo" + Integer.toString(k);
-        cardsData2[k+8] = "ic_memo" + Integer.toString(k);
+        for(int k=0; k<8; k++)
+        {
+            //cardsData[k]=k;
+            //cardsData[k+8]=k;
+            cardsData2[k] = "ic_memo" + Integer.toString(k);
+            cardsData2[k+8] = "ic_memo" + Integer.toString(k);
 
-    }
+        }
 
+        //SHUFFLE CARDS
+        for(int i=0; i<16; i++){
+            Random rnd = new Random();
+            int r = rnd.nextInt(16);
+            String tmp = cardsData2[i];
+            cardsData2[i] = cardsData2[r];
+            cardsData2[r] = tmp;
 
+        }
 
-    //SHUFFLE CARDS
-
-
-    for(int i=0; i<16; i++){
-        Random rnd = new Random();
-        int r = rnd.nextInt(16);
-        String tmp = cardsData2[i];
-        cardsData2[i] = cardsData2[r];
-        cardsData2[r] = tmp;
-
-    }
-
-    Log.i("Cards rnd", " "+ printIntArray(cardsData));
+        Log.i("Cards rnd", " "+ printIntArray(cardsData));
         Log.i("Cards rnd", " "+ printStringArray(cardsData2));
 
 
 
 
-    for(int i=0; i<16; i++){
-        int id = getResources().getIdentifier("imageView"+i,"id", getPackageName());
-        final ImageView card = (ImageView) findViewById(id);
-        final int j = i;
+        for(int i=0; i<16; i++){
+            int id = getResources().getIdentifier("imageView"+i,"id", getPackageName());
+            final ImageView card = (ImageView) findViewById(id);
+            final int j = i;
 
-        card.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
+            card.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
 
-                String name = view.getResources().getResourceEntryName(view.getId());
-                int curId = Integer.parseInt(name.substring(9));
-                final ImageView curCard = (ImageView) view;
+                    String name = view.getResources().getResourceEntryName(view.getId());
+                    int curId = Integer.parseInt(name.substring(9));
+                    final ImageView curCard = (ImageView) view;
 
-                curCard.animate().scaleX(0f).setDuration(100);
+                    curCard.animate().scaleX(0f).setDuration(100);
 
-                Handler curTimer = new Handler();
+                    Handler curTimer = new Handler();
 
-                curTimer.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        curCard.animate().scaleX(1f).setDuration(100);
-                    }
+                    curTimer.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            curCard.animate().scaleX(1f).setDuration(100);
+                        }
 
-                }, 200);
-                int imageId = getResources().getIdentifier(cardsData2[j], "mipmap", getPackageName());
-                curCard.setImageResource(imageId);
-                curCard.setClickable(false);
-                new java.util.Timer().schedule(
-                        new java.util.TimerTask() {
-                            @Override
-                            public void run() {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        checkCards(curCard, cardsData2[j]);
+                    }, 200);
+                    int imageId = getResources().getIdentifier(cardsData2[j], "mipmap", getPackageName());
+                    curCard.setImageResource(imageId);
+                    curCard.setClickable(false);
+                    new java.util.Timer().schedule(
+                            new java.util.TimerTask() {
+                                @Override
+                                public void run() {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            checkCards(curCard, cardsData2[j]);
 
-                                    }
-                                });
-                            }
-                        },
-                        1000
-                );
-
-
+                                        }
+                                    });
+                                }
+                            },
+                            1000
+                    );
 
 
-            }
 
-        });
+
+                }
+
+            });
+        }
+
+
     }
-
-
-    }
-    String c1 = null;
-    String c2 = null;
-    ImageView tmpImg;
-    int counter = 0;
 
     public Object clone(ImageView v) {
         try {
@@ -134,6 +141,10 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
                 c2 = null;
                 tmpImg = null;
                 counter++;
+                TextView points = (TextView)findViewById(R.id.textScore);
+                String t = points.getText().toString();
+                t += 5;
+
                 Log.i("count", "ciao"+counter);
                 if (counter == 8){
                     AlertDialog.Builder b = new AlertDialog.Builder(GameActivity.this);
@@ -148,7 +159,9 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
                         }
                 });
                 AlertDialog alertDialog = b.create();
-                alertDialog.show();}
+                alertDialog.setCanceledOnTouchOutside(false);
+                alertDialog.show();
+                }
             } else {
                 tmpImg.setImageResource(R.mipmap.ic_memo1);
                 c.setImageResource(R.mipmap.ic_memo1);

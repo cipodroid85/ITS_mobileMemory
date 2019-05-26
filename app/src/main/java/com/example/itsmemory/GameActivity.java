@@ -2,10 +2,7 @@ package com.example.itsmemory;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,62 +10,42 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
-
 import java.util.Random;
-
 
 public class GameActivity extends AppCompatActivity implements Cloneable {
 
-    int[] cardsData = new int[16];
     String[] cardsData2 = new String[16];
     String c1 = null;
     String c2 = null;
     ImageView tmpImg;
     int counter = 0;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-
-        TextView points = (TextView)findViewById(R.id.textScore);
-        String t = points.getText().toString();
-
-        Log.i("test", t);
         // init cards
         for(int k=0; k<8; k++)
         {
             //cardsData[k]=k;
             //cardsData[k+8]=k;
-            cardsData2[k] = "ic_memo" + Integer.toString(k);
-            cardsData2[k+8] = "ic_memo" + Integer.toString(k);
-
+            cardsData2[k] = "ic_memo" + (k+2);
+            cardsData2[k+8] = "ic_memo" + (k+2);
         }
-
         //SHUFFLE CARDS
-        for(int i=0; i<16; i++){
+        for(int i=0; i<16; i++)
+        {
             Random rnd = new Random();
             int r = rnd.nextInt(16);
             String tmp = cardsData2[i];
             cardsData2[i] = cardsData2[r];
             cardsData2[r] = tmp;
-
         }
-
-        Log.i("Cards rnd", " "+ printIntArray(cardsData));
-        Log.i("Cards rnd", " "+ printStringArray(cardsData2));
-
-
-
-
-        for(int i=0; i<16; i++){
+        for(int i=0; i<16; i++)
+        {
             int id = getResources().getIdentifier("imageView"+i,"id", getPackageName());
-            final ImageView card = (ImageView) findViewById(id);
+            final ImageView card = findViewById(id);
             final int j = i;
 
             card.setOnClickListener(new View.OnClickListener(){
@@ -101,81 +78,65 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
                                         @Override
                                         public void run() {
                                             checkCards(curCard, cardsData2[j]);
-
                                         }
                                     });
                                 }
-                            },
-                            1000
-                    );
-
-
-
-
+                            }, 500);
                 }
-
             });
         }
-
-
     }
 
-    public Object clone(ImageView v) {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
-    }
     private void checkCards(ImageView c, String s) {
+        TextView points = findViewById(R.id.textScore);
+        int t = Integer.parseInt(points.getText().toString());
 
-        if (c1==null) {
+        if (c1==null)
+        {
             c1 = s;
             tmpImg = c;
         } else {
             c2 = s;
-            if (c1.equals(c2)){
-
-                Log.i("right", "corretto");
+            if (c1.equals(c2)) {
                 c1 = null;
                 c2 = null;
                 tmpImg = null;
                 counter++;
-                TextView points = (TextView)findViewById(R.id.textScore);
-                String t = points.getText().toString();
-                t += 5;
-
-                Log.i("count", "ciao"+counter);
-                if (counter == 8){
+                points.setText("" + (t += 10));
+                if (counter == 8) {
+                    Intent res = new Intent();
+                    res.putExtra("result", "Il tuo record è: " + points);
+                    setResult(10, res);
                     AlertDialog.Builder b = new AlertDialog.Builder(GameActivity.this);
                     b.setMessage("you win");
                     b.setPositiveButton("Torna indietro",
                             new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog,
-                        int which)
-                        {
-                            startActivity(new Intent(GameActivity.this, MainActivity.class));
-                        }
-                });
-                AlertDialog alertDialog = b.create();
-                alertDialog.setCanceledOnTouchOutside(false);
-                alertDialog.show();
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    startActivity(new Intent(GameActivity.this, MainActivity.class));
+                                }
+                            });
+                    AlertDialog alertDialog = b.create();
+                    alertDialog.setCanceledOnTouchOutside(false);
+                    alertDialog.show();
                 }
+
             } else {
+                points.setText("" + (t -= 1));
                 tmpImg.setImageResource(R.mipmap.ic_memo1);
                 c.setImageResource(R.mipmap.ic_memo1);
                 tmpImg.setClickable(true);
                 c.setClickable(true);
                 c1 = null;
                 c2 = null;
-
             }
         }
-
-
     }
+}
 
+
+    /*  Array Print
     String printIntArray (int[] a){
         String s = "";
         for(int i=0; i<a.length; i++){
@@ -193,5 +154,4 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
 
         }
         return s;
-    }
-}
+    }*/

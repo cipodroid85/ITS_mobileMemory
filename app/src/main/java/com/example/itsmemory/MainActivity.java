@@ -13,25 +13,24 @@ import android.widget.TextView;
 import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
+    SharedPreferences dataobj;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         final TextView tv2 = (TextView)findViewById(R.id.textView2);
-        final SharedPreferences dataobj;
         dataobj = getPreferences(MODE_PRIVATE);
-        String name = dataobj.getString("name", "nessuno");
+        String name = dataobj.getString("name", "Il tuo record: 0");
 
         tv2.setText(name);
 
         ImageView playButton = (ImageView) findViewById(R.id.imageView3);
-
         playButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 startActivityForResult(new Intent(MainActivity.this, GameActivity.class), 10);
-                dataobj.edit().putString("name", (String)tv2.getText()).commit();
 
             }
         });
@@ -43,8 +42,9 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == 10) {
             String s = data.getExtras().getString("result");
             TextView tv = (TextView)findViewById(R.id.textView2);
-            Log.i("msg", s);
             tv.setText(s);
+            dataobj.edit().putString("name", s).commit();
+
         }
     }
 }

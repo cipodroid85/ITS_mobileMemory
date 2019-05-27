@@ -2,14 +2,15 @@ package com.example.itsmemory;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import java.util.Random;
 
 public class GameActivity extends AppCompatActivity implements Cloneable {
@@ -88,7 +89,7 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
     }
 
     private void checkCards(ImageView c, String s) {
-        TextView points = findViewById(R.id.textScore);
+        final TextView points = findViewById(R.id.textScore);
         int t = Integer.parseInt(points.getText().toString());
 
         if (c1==null)
@@ -104,9 +105,6 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
                 counter++;
                 points.setText("" + (t += 10));
                 if (counter == 8) {
-                    Intent res = new Intent();
-                    res.putExtra("result", "Il tuo record è: " + points);
-                    setResult(10, res);
                     AlertDialog.Builder b = new AlertDialog.Builder(GameActivity.this);
                     b.setMessage("you win");
                     b.setPositiveButton("Torna indietro",
@@ -114,7 +112,12 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
                                 @Override
                                 public void onClick(DialogInterface dialog,
                                                     int which) {
-                                    startActivity(new Intent(GameActivity.this, MainActivity.class));
+                                    Intent res = new Intent();
+                                    res.putExtra("result", "Il tuo record: " + points.getText());
+                                    setResult(10, res);
+
+                                    finish();
+                                    //startActivity(new Intent(GameActivity.this, MainActivity.class));
                                 }
                             });
                     AlertDialog alertDialog = b.create();

@@ -106,18 +106,17 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
                 points.setText("" + (t += 10));
                 if (counter == 8) {
                     AlertDialog.Builder b = new AlertDialog.Builder(GameActivity.this);
-                    b.setMessage("you win");
+                    b.setMessage("Complimenti, hai vinto! :3 Se vuoi migliorare il tuo record, gioca ancora!");
                     b.setPositiveButton("Torna indietro",
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog,
                                                     int which) {
                                     Intent res = new Intent();
-                                    res.putExtra("result", "Il tuo record: " + points.getText());
+                                    res.putExtra("result", "Record: " + points.getText());
                                     setResult(10, res);
 
                                     finish();
-                                    //startActivity(new Intent(GameActivity.this, MainActivity.class));
                                 }
                             });
                     AlertDialog alertDialog = b.create();
@@ -137,24 +136,3 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
         }
     }
 }
-
-
-    /*  Array Print
-    String printIntArray (int[] a){
-        String s = "";
-        for(int i=0; i<a.length; i++){
-
-            s+=a[i]+", ";
-
-        }
-        return s;
-    }
-    String printStringArray (String[] a){
-        String s = "";
-        for(int i=0; i<a.length; i++){
-
-            s+=a[i]+", ";
-
-        }
-        return s;
-    }*/

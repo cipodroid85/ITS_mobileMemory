@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
         final TextView tv2 = (TextView)findViewById(R.id.textView2);
         dataobj = getPreferences(MODE_PRIVATE);
-        String name = dataobj.getString("name", "Il tuo record: 0");
+        String name = dataobj.getString("name", "Record: 0");
 
         tv2.setText(name);
 

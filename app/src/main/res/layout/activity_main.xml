@@ -8,6 +8,7 @@
     app:barrierAllowsGoneWidgets="false"
     tools:context=".MainActivity">
 
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="0dp"

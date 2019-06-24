@@ -2,12 +2,15 @@ package com.example.itsmemory;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.VolumeShaper;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,17 +23,22 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
     String c2 = null;
     ImageView tmpImg;
     int counter = 0;
+    boolean tt= true;
+    MediaPlayer mp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        mp = MediaPlayer.create(this, R.raw.bg_game1);
+        mp.start();
+
+
         // init cards
         for(int k=0; k<8; k++)
         {
-            //cardsData[k]=k;
-            //cardsData[k+8]=k;
             cardsData2[k] = "ic_memo" + (k+2);
             cardsData2[k+8] = "ic_memo" + (k+2);
         }
@@ -71,6 +79,9 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
                     int imageId = getResources().getIdentifier(cardsData2[j], "mipmap", getPackageName());
                     curCard.setImageResource(imageId);
                     curCard.setClickable(false);
+                    MediaPlayer mp1 = MediaPlayer.create(GameActivity.this, R.raw.card);
+                    mp1.start();
+
                     new java.util.Timer().schedule(
                             new java.util.TimerTask() {
                                 @Override
@@ -79,6 +90,7 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
                                         @Override
                                         public void run() {
                                             checkCards(curCard, cardsData2[j]);
+
                                         }
                                     });
                                 }
@@ -103,29 +115,57 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
                 c2 = null;
                 tmpImg = null;
                 counter++;
-                points.setText("" + (t += 10));
+                points.setText("" + (t += 100));
                 if (counter == 8) {
                     AlertDialog.Builder b = new AlertDialog.Builder(GameActivity.this);
-                    b.setMessage("Complimenti, hai vinto! :3 Se vuoi migliorare il tuo record, gioca ancora!");
-                    b.setPositiveButton("Torna indietro",
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    Intent res = new Intent();
-                                    res.putExtra("result", "Record: " + points.getText());
-                                    setResult(10, res);
 
-                                    finish();
-                                }
-                            });
+                    if (Integer.parseInt(points.getText().toString())>=0) {
+                        final MediaPlayer mp3 = MediaPlayer.create(GameActivity.this, R.raw.win);
+                        mp.stop();
+                        mp3.start();
+                        final EditText playerName = new EditText(this);
+                        b.setView(playerName);
+
+                        b.setMessage("Complimenti, hai vinto! :3 Se vuoi migliorare il tuo record, gioca ancora!\n Inserisci il tuo " +
+                                "nome per salvare il tuo record.");
+                        b.setPositiveButton("Salva",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which) {
+                                        Intent res = new Intent();
+                                        res.putExtra("result", Integer.parseInt(points.getText().toString()));
+                                        if (playerName.getText().toString().equals("")) {
+                                            res.putExtra("name", "XXX");
+                                        } else {
+                                            res.putExtra("name", playerName.getText().toString());
+                                        }
+                                        setResult(10, res);
+                                        mp3.stop();
+                                        finish();
+                                    }
+                                });
+                    } else {
+                        b.setMessage("Mi spiace, punteggio negativo, hai perso. Se vuoi migliorare gioca ancora!\n");
+                        b.setPositiveButton("Torna indietro",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                int which) {
+                                        finish();
+                                    }
+                                });
+                    }
+
                     AlertDialog alertDialog = b.create();
                     alertDialog.setCanceledOnTouchOutside(false);
                     alertDialog.show();
+                } else {
+                    MediaPlayer mp2 = MediaPlayer.create(GameActivity.this, R.raw.card_ok);
+                    mp2.start();
                 }
-
             } else {
-                points.setText("" + (t -= 1));
+                points.setText("" + (t -= 20));
                 tmpImg.setImageResource(R.mipmap.ic_memo1);
                 c.setImageResource(R.mipmap.ic_memo1);
                 tmpImg.setClickable(true);
@@ -134,5 +174,16 @@ public class GameActivity extends AppCompatActivity implements Cloneable {
                 c2 = null;
             }
         }
+    }
+
+    public void onBackPressed() {
+        mp.stop();
+        finish();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mp.pause();
     }
 }
